@@ -1,8 +1,6 @@
-import { Button } from "@/app/_components/ui/button";
 import { db } from "@/app/_lib/prisma";
-import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
-import Image from "next/image";
 import BarbershopInfo from "./_components/barbershopInfo";
+import ServiceItem from "./_components/serviceItem";
 
 interface BarbershopDetailsPageProps {
     params: {
@@ -18,13 +16,23 @@ const BarbershopDetailsPage = async ({params} : BarbershopDetailsPageProps) => {
         where: {
             id: params.id,
         },
+        include: {
+            Services: true,
+        }
     })
     if(!barbershop){
         return null;
     }
+    
     return (
-        <BarbershopInfo barbershopInfo={barbershop}/>
-            
+        <div>
+            <BarbershopInfo barbershopInfo={barbershop}/>
+            <div className="my-4 px-3 max-w-[500px] mx-auto flex flex-col gap-4">
+            {barbershop.Services.map((service) => (
+                <ServiceItem key={service.id} serviceItem={service}/>
+            ))}
+            </div>
+        </div>
     );
 }
  
