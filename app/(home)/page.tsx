@@ -13,7 +13,7 @@ export default async function Home() {
             <Header />
             <div className="max-w-[800px] mx-auto">
                 <div className="px-5 pt-5">
-                    <h2 className="text-xl font-bold ">Olá, Miguel!</h2>
+                <h2 className="text-xl font-bold ">Olá, Miguel!</h2>
                     <p className="capitalize text-sm">{format(new Date(),"EEEE',' d 'de' MMMM 'de' yyyy", {
                         locale: ptBR,
                     })}</p>
