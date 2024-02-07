@@ -3,9 +3,11 @@ import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { MenuIcon } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 const Header = () => {
+    const { data } = useSession();
+
     const handleLoginClick = async () => {
         await signIn();
     }
@@ -17,9 +19,13 @@ const Header = () => {
                     height={22}
                     width={120} 
                 />
-                <Button onClick={handleLoginClick}>
-                    Login
-                </Button>
+                {data?.user ? 
+                    <h2>{data?.user?.name}</h2>
+                    :
+                    <Button onClick={handleLoginClick}>
+                        Login
+                    </Button>
+                }
                 {/*<Button variant="outline" size="icon">
                     <MenuIcon size={18} />
                 </Button>*/}
