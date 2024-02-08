@@ -509,3 +509,37 @@ Agora podemos coletar dados do usuário em sessão na nossa aplicação dentro d
 O componente acima deve exibir seu nome se estiver logado, para isso voce precisará ativar uma função assincrona do Next-auth chamada `SignIn()` e para deslogar de uma sessão voce deve usar uma função assincrona `SignOut()`. Assim voce poderá usar a autenticação e todas as suas facilidades de maneira completa.
 ### autenticado e não autenticado
 Além de `data` do useSession ainda podemos pegar dados de `status` que é um valor que pode ser `authenticated` ou `unauthenticated`
+
+## Sessão no lado do servidor
+Para pegar a sessão do lado do servidor precisamos usar outra função do next.auth, a função assincrona `getSeverSession()`, voce pode saber se um usuário está autenticado usando o seguinte:
+```typescript
+const session = await getServerSession();
+
+{!!session?.user}
+```
+as duas esclamações retornam um booleano que indica se temos usuário na sessão. Porém para ter acesso a esses dados de sessão precisamos exportá-los das nossas rotas de servidor, logo vamos alterar um pouco o `route.tsx`:
+```typescript
+import NextAuth, { AuthOptions } from "next-auth";
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { db } from "@/app/_lib/prisma";
+import { Adapter } from "next-auth/adapters";
+
+export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(db) as Adapter,
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    })
+  ]
+}
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST }
+```
+agora exportamos as opções de autenticação ao mesmo tempo do handler com a função do next auth que recebe essas opções. Agora eu posso passar esse `authOptions` para o meu `getServerSession()`
+```typescript
+const session = await getServerSession(authOptions);
+```
