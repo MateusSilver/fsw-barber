@@ -2,10 +2,11 @@
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { LogInIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Link from "next/link";
 
 const Header = () => {
     const { data, status } = useSession();
@@ -53,14 +54,29 @@ const Header = () => {
                                     </Button>
                                 </div> 
                                 : 
-                                <div className="flex flex-col gap-2 px-5 py-6">
+                                (<div className="flex flex-col gap-2 px-5 py-6">
                                     <div className="flex items-center gap-2 mb-4">
                                         <UserIcon size={32} />
                                         <h2 className="text-bold">Faça seu login!</h2>
                                     </div>
                                     <Button onClick={handleLoginClick} className="w-full justify-start" variant="secondary"><LogInIcon className="mr-2" size={18} />Fazer Login</Button>
                                 </div>
-                            }
+                                )}
+                                <div className="flex flex-col gap-3 px-5">
+                                    <Link href="/">
+                                        <Button variant="outline" className="w-full justify-start">
+                                            <HomeIcon className="mr-2" size={18}/> Início
+                                        </Button>
+                                    </Link>
+                                    {data?.user &&
+                                        <Link href="/bookings">
+                                            <Button variant="outline" className="w-full justify-start">
+                                                <CalendarIcon className="mr-2" size={18}/>Agendamentos
+                                            </Button>
+                                        </Link>
+                                    }
+                                </div>
+                            
                         </SheetDescription>
                     </SheetContent>
                 </Sheet>
