@@ -7,7 +7,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 const Welcome = () => {
     const { data } = useSession();
     const handleLoginClick = async () => {
-        await signIn();
+        await signIn("google");
     }
     const handleLogOutClick = async () => {
         await signOut();

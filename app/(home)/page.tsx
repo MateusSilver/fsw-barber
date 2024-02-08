@@ -15,7 +15,6 @@ export default async function Home() {
             <div className="max-w-[800px] mx-auto">
                 <Welcome />
                 
-                
                 <div className="px-5 mt-6">
                     <Search />
                 </div>
