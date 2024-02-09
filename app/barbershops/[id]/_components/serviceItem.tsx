@@ -12,6 +12,8 @@ import { useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
 import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/saveBooking";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -20,9 +22,11 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProps) => {
+    const router = useRouter();
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [hour, setHour] = useState<string | undefined>();
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
+    const [sheetIsOpen, setSheetIsOpen] = useState(false);
 
     const { data } = useSession();
 
@@ -63,10 +67,21 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
                 date: newDate,
                 userId: (data.user as any).id,
             });
+            toast("Reserva marcada com sucesso", {
+                description: format(newDate, "'Para' EEEE',' dd 'de' MMMM 'às' HH':'mm", {locale: ptBR}),
+                action: {
+                  label: "Ver",
+                  onClick: () => router.push("/bookings"),
+                },
+              })
+
         } catch (error) {
             console.error(error);
         }
         finally {
+            setSheetIsOpen(false);
+            setDate(undefined);
+            setHour(undefined);
             setSubmitIsLoading(false);
         }
     }
@@ -96,7 +111,7 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
                                 {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL'}
                                 ).format(Number(serviceItem.price))}
                             </p>
-                            <Sheet>
+                            <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                                 <SheetTrigger asChild>
                                     <Button onClick={handleBookingClick} variant="secondary" className="hover:bg-primary">Reservar</Button>
                                 </SheetTrigger>
