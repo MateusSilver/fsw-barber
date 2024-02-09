@@ -543,3 +543,47 @@ agora exportamos as opções de autenticação ao mesmo tempo do handler com a f
 ```typescript
 const session = await getServerSession(authOptions);
 ```
+
+## Calendar component
+O componente de calendário do Shadcn-ui é feito com a biblioteca do [react-day-picker](https://react-day-picker.js.org/). Deste modo a estilização dele é personalizada e não pode ser feita no tailwind, então temos propriedades e estilos de classe proprios para esse componentes. observe:
+```typescript
+<Calendar 
+  mode="single" 
+  selected={date} 
+  onSelect={setDate} 
+  className="" 
+  locale={ptBR}
+  styles={{
+    head_cell: {
+      width: "100%",
+    },
+      cell: {
+      width: "100%",
+    },
+      button: {
+      width: "100%",
+    },
+    nav_button_previous: {
+      width: "32px",
+      height: "32px",
+    },
+    nav_button_next: {
+      width: "32px",
+      height: "32px",
+    },
+    caption: {
+      textTransform: "capitalize",
+    }
+  }}
+/>
+```
+Ele utiliza o `useState()` do react, então não se esqueça de fazer uma declaração para que os resultados dos cliques em cada dia sejam renderizados e guardados.
+### useMemo()
+
+O useMemo é uma função do react que executa uma função apenas quando uma variavel dentro de uma lista de referencias é alterado, semelhante ao `useEffect()`, deste modo voce deve usar desse jeito:
+```typescript
+const timeList = useMemo(() => {
+  return date ? generateDayTimeList(date) : []
+}, [date]);
+
+```
