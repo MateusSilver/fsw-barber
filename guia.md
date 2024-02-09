@@ -377,6 +377,10 @@ Não esqueça de fazer sua migration do schema para atualizar seu banco online:
 ```bash
 npx prisma migrate dev --name add_user_tables
 ```
+E não se esqueça de sempre que mudar o banco usar o comando:
+```bash
+npx prisma generate
+```
 Instale o Next.Auth com o seguinte comando:
 ```bash
 npm i next-auth
@@ -587,3 +591,6 @@ const timeList = useMemo(() => {
 }, [date]);
 
 ```
+
+## Server actions
+Para enviar algo para o banco de dados ou mesmo usar qualquer ação de servidor em componentes do lado client no next, voce pode usar as server actions. Para fazer isso nós usaremos 
