@@ -63,12 +63,12 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
             return
         }
         const refreshAvailableHous = async () => {
-            const _dayBookings = await GetDayBookings(date);
+            const _dayBookings = await GetDayBookings(barbershop.id, date);
             setDayBookings(_dayBookings);
         };
 
         refreshAvailableHous();
-    }, [date])
+    }, [date, barbershop.id])
 
     const handleDateClick = (date: Date | undefined) => {
         setDate(date);
