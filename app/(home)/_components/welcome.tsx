@@ -17,7 +17,7 @@ const Welcome = () => {
         <>
             {data?.user ?
                 (
-                    <div className="flex justify-between px-5 pt-5">
+                    <div className="flex justify-between pt-5">
                         <div className="">
                             <h2 className="text-xl font-bold ">Olá, {data?.user?.name}!</h2>
                             <p className="capitalize text-sm">{format(new Date(),"EEEE',' d 'de' MMMM 'de' yyyy", { locale: ptBR,})}</p>
@@ -26,9 +26,9 @@ const Welcome = () => {
                     </div>
                     
                 ) : (
-                    <div className="flex justify-between px-5 pt-5">
+                    <div className="flex justify-between pt-5">
                         <div className="">
-                            <h2 className="text-xl font-bold ">Olá, Miguel!</h2>
+                            <h2 className="text-xl font-bold ">Olá, Faça seu login!</h2>
                             <p className="capitalize text-sm">{format(new Date(),"EEEE',' d 'de' MMMM 'de' yyyy", {
                                 locale: ptBR,
                             })}</p>

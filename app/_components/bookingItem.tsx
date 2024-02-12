@@ -18,7 +18,7 @@ interface BookingItemProps {
 const BookingItem = ({booking}: BookingItemProps) => {
     const isExpired = isPast(booking.date);
     return (
-        <Card>
+        <Card className="min-w-[400px]">
             <CardContent className="py-0 px-0 flex">
                 <div className="flex flex-[3] flex-col gap-2 pl-5 py-5">
                     <Badge className="w-fit" variant={isExpired ? "secondary":"default"}>{
