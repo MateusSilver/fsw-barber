@@ -593,4 +593,29 @@ const timeList = useMemo(() => {
 ```
 
 ## Server actions
-Para enviar algo para o banco de dados ou mesmo usar qualquer ação de servidor em componentes do lado client no next, voce pode usar as server actions. Para fazer isso nós usaremos 
+Para enviar algo para o banco de dados ou mesmo usar qualquer ação de servidor em componentes do lado client no next, voce pode usar as server actions. Para fazer isso nós usaremos um arquivo diferente com a função que salva as ações de servidor com o comando `use server`. As funções de servidor vão ficar nesse arquivo:
+```typescript 
+"use server";
+
+import { db } from "@/app/_lib/prisma";
+
+interface saveBookingParams {
+    barbershopId: string;
+    serviceId: string;
+    userId: string;
+    date: Date;
+}
+
+
+export const saveBooking = async (params: saveBookingParams) => {
+  await db.booking.create({
+    data: {
+      userId: params.userId,
+      serviceId: params.serviceId,
+      date: params.date,
+      barbershopId: params.barbershopId
+    }
+  })
+}
+```
+Com isso voce pode chamar a função de saveBooking em qualquer função assincrona do lado do client. Assim em algum botão voce pode passar os dados de params para o backend salvar em banco.

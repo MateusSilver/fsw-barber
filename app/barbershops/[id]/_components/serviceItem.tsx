@@ -3,17 +3,18 @@ import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { Barbershop, Service } from "@prisma/client";
+import { Barbershop, Booking, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { Currency, Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
 import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/saveBooking";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { GetDayBookings } from "../_actions/getDayBookings";
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -27,16 +28,47 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
     const [hour, setHour] = useState<string | undefined>();
     const [submitIsLoading, setSubmitIsLoading] = useState(false);
     const [sheetIsOpen, setSheetIsOpen] = useState(false);
+    const [dayBookings, setDayBookings] = useState<Booking[]>([]);
 
     const { data } = useSession();
 
     const timeList = useMemo(() => {
-        return date ? generateDayTimeList(date) : [];
-    }, [date]);
+        if(!date) {
+            return []
+        }
+        return generateDayTimeList(date).filter(time => {
+            const timeHour = Number(time.split(":")[0]);
+            const timeMinutes = Number(time.split(":")[1]);
+
+            const booking = dayBookings.find(booking => {
+                const bookingHour = booking.date.getHours();
+                const bookingMinutes = booking.date.getMinutes();
+
+                return bookingHour === timeHour && bookingMinutes === timeMinutes;
+            });
+            if (!booking) {
+                return true;
+            }
+            return false;
+        })
+
+    }, [date, dayBookings]);
 
     const handleHourClick = (time: string) => {
         setHour(time);
     }
+
+    useEffect(()=> {
+        if(!date){
+            return
+        }
+        const refreshAvailableHous = async () => {
+            const _dayBookings = await GetDayBookings(date);
+            setDayBookings(_dayBookings);
+        };
+
+        refreshAvailableHous();
+    }, [date])
 
     const handleDateClick = (date: Date | undefined) => {
         setDate(date);
@@ -122,7 +154,6 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
                                             Reserva
                                         </SheetTitle>
                                     </SheetHeader>
-
                                     <Calendar mode="single" selected={date} onSelect={handleDateClick} className="py-6" locale={ptBR}
                                         fromDate={new Date()}
                                         styles={{
@@ -190,7 +221,6 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
                                     </div>
 
                                     <SheetFooter className="px-5">
-                                        
                                         <Button onClick={handleBookingSubmit} disabled={!hour || !date || submitIsLoading} className="bg-primary w-full">
                                             {submitIsLoading && (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -198,7 +228,6 @@ const ServiceItem = ({serviceItem, barbershop, isAuthenticated}: ServiceItemProp
                                             Confirmar Reserva
                                         </Button>
                                     </SheetFooter>
-
                                 </SheetContent>
                             </Sheet>
                         </div>
