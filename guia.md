@@ -1,31 +1,42 @@
 # Guia do desenvolvimento - Lições aprendidas
+
 ## Banco de dados
+
 Uso de `Decimal` para float em banco de dados, se for usar preço nisso é bom usar o formato do banco de dados no seguinte modelo para base decimal e duas casas depois da virgula:
+
 ```prisma
 price Decimal @db.Decimal(10,2)
 ```
+
 Para adicionar formatação e relações corretamente corrigindo erros e ganhando tempo voce pode rodar no terminal o comando:
+
 ```prisma
 npx prisma format
 ```
 
 Para ver seu banco de dados rode o comando:
+
 ```prisma
 npx prisma studio
 ```
 
 depois de adicionar o seed para popular o banco de dados, adicione no package.json o seguinte codigo:
+
 ```json
 "prisma": {
     "seed":"ts-node prisma/see.ts"
 },
 ```
+
 para que voce consiga popular o banco rodando o comando de seed, usando o compilador do typescript para gerar o código de popular o banco, voce deve baixar o compilador typescript e rodar a atualização de banco com esse código em mente use o seguinte:
+
 ```bash
 npm i -D ts-node
 npx prisma db seed
 ```
+
 usando o arquivo com os seguinte seed abaixo podemos adicionar coisas ao banco usando o typescript:
+
 ```typescript
 const { PrismaClient } = require("@prisma/client");
 
@@ -89,31 +100,36 @@ async function seedDatabase() {
         name: "Corte de Cabelo",
         description: "Estilo personalizado com as últimas tendências.",
         price: 60.0,
-        imageURL: "https://utfs.io/f/0ddfbd26-a424-43a0-aaf3-c3f1dc6be6d1-1kgxo7.png",
+        imageURL:
+          "https://utfs.io/f/0ddfbd26-a424-43a0-aaf3-c3f1dc6be6d1-1kgxo7.png",
       },
       {
         name: "Barba",
         description: "Modelagem completa para destacar sua masculinidade.",
         price: 40.0,
-        imageURL: "https://utfs.io/f/e6bdffb6-24a9-455b-aba3-903c2c2b5bde-1jo6tu.png",
+        imageURL:
+          "https://utfs.io/f/e6bdffb6-24a9-455b-aba3-903c2c2b5bde-1jo6tu.png",
       },
       {
         name: "Pézinho",
         description: "Acabamento perfeito para um visual renovado.",
         price: 35.0,
-        imageURL: "https://utfs.io/f/8a457cda-f768-411d-a737-cdb23ca6b9b5-b3pegf.png",
+        imageURL:
+          "https://utfs.io/f/8a457cda-f768-411d-a737-cdb23ca6b9b5-b3pegf.png",
       },
       {
         name: "Sobrancelha",
         description: "Expressão acentuada com modelagem precisa.",
         price: 20.0,
-        imageURL: "https://utfs.io/f/2118f76e-89e4-43e6-87c9-8f157500c333-b0ps0b.png",
+        imageURL:
+          "https://utfs.io/f/2118f76e-89e4-43e6-87c9-8f157500c333-b0ps0b.png",
       },
       {
         name: "Massagem",
         description: "Relaxe com uma massagem revigorante.",
         price: 50.0,
-        imageURL: "https://utfs.io/f/c4919193-a675-4c47-9f21-ebd86d1c8e6a-4oen2a.png",
+        imageURL:
+          "https://utfs.io/f/c4919193-a675-4c47-9f21-ebd86d1c8e6a-4oen2a.png",
       },
       {
         name: "Hidratação",
@@ -169,22 +185,29 @@ seedDatabase();
 ## Date-fns
 
 Vamos usar a Date-fns para formatar e exibir datas de forma simples
+
 ```bash
 npm i date-fns
 ```
+
 Para usar ela é bem simples, dê uma olhada nos formatos e use da seguinte maneira:
+
 - se preciso usar uma data de hoje uso `format(new Date(), <<fomato que eu quero>>)`
 - para saber os formatos existentes acesse o [date-fns](https://date-fns.org/v3.3.1/docs/format)
-- Voce pode ainda adicionar um terceiro atributo a `format` para expecificar a linguagem de onde está, usando um objeto com o seguinte atributo: `locale: ptBR` por exemplo 
+- Voce pode ainda adicionar um terceiro atributo a `format` para expecificar a linguagem de onde está, usando um objeto com o seguinte atributo: `locale: ptBR` por exemplo
 
 Usando dos atributos temos o seguinte exemplo:
+
 ```typescript
-<p>{format(new Date(),'EEEE', {locale: ptBR})}</p>
+<p>{format(new Date(), "EEEE", { locale: ptBR })}</p>
 ```
+
 onde voce exibirá o dia da semana em português do Brasil.
 
 ## Usando o prisma client global
+
 Para não fazer o hot reload, e recarregar a pagina criando uma nova conexão no banco toda vez que recarregar a pagina vamos usar o seguinte codigo na pasta `lib`, criando o `prisma.ts`:
+
 ```typescript
 import { PrismaClient } from "@prisma/client";
 
@@ -204,64 +227,76 @@ if (process.env.NODE_ENV === "production") {
 
 export const db = prisma;
 ```
+
 Com isso podemos fazer os seguintes códigos no projeto:
+
 ```typescript
 const barbershops = await db.barbershop.findMany({});
 ```
+
 e posteriormente usar no mesmo server-component da seguinte forma:
+
 ```javascript
-{barbershops.map((barbershop) => (
-  <BarbershopItem 
-    key={barbershop.id}
-    barbershop={barbershop}
-  />
-))}
+{
+  barbershops.map((barbershop) => (
+    <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+  ));
+}
 ```
+
 Voce terá problemas usando as imagens do banco de dados se não declarar o dominio delas no arquivo `next.config.mjs`
+
 ```javascript
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                hostname: "utfs.io",
-            },
-        ],
-    },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "utfs.io",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
 ```
 
 ## Banco de dados de imagens
+
 Para usar imagens em um projeto, nao guarde no seu proprio repositório, use um servidor de imagens e importe com o link as imagens no seu site, voce pode usar um banco de dados não relacional como [UploadThing](https://uploadthing.com/)
 
 ## Páginas dinâmicas
+
 Para criar páginas de conteúdos dinamicas no next.js, como paginas de produtos e detalhes do banco, vamos utilizar uma momenclatura de pastas da seguinte maneira
+
 ```bash
 app/{grupo}/[id]/page.tsx
 ```
+
 onde `{grupo}` vai ser substituido pelo que voce quiser para agrupar, como `produtos` ou `servicos`, o importante é a momenclatura do `[id]` entre chaves.
 Após fazer isso, use o params da página para buscar o id no banco de dados da entidade que voce precisa. Começamos definindo a interface com o mesmo nome do componente adicionando Props no final, com params para usar as informações de `id` da página:
+
 ```typescript
 interface ProductDetailsPageProps {
   params?: string;
 }
 
-const ProductDetailsPage = () => {
-
-}
+const ProductDetailsPage = () => {};
 export default ProductDetailsPage;
 ```
+
 Usamos esse params e como estamos em um server component usamos o prisma client para procurar o id que queremos, no caso o id do params.
+
 ```typescript
 const product = await db.product.findUnique({
   where: {
     id: params.id,
   },
 });
-``` 
+```
+
 Lembrando de usar o async já que voce deve acessar o banco de dados com uma função assíncrona. logo a pagina do produto fica assim:
+
 ```Typescript
 import { db } from "@/app/_lib/prisma";
 
@@ -281,12 +316,16 @@ const BarbershopDetailsPage = async ({params} : BarbershopDetailsPageProps) => {
         <h1>{params.id}</h1>
     );
 }
- 
+
 export default BarbershopDetailsPage;
 ```
+
 a momenclatura do `where` é definida pra realizar buscas no banco de dados como um json para a função `findUnique` que é mais rápida do que outras funções do prisma client.
+
 ## next router
+
 Para fazer com que o clique gere o redirecionamento para a pagina do produto dinamica, voce deve usar o next router da seguinte maneira, no componente de item do produto que deve ter seu id:
+
 ```typescript
 "use client";
 import { useRouter } from "next/navigation";
@@ -294,12 +333,15 @@ import { useRouter } from "next/navigation";
 const router = useRouter();
 const handleclick = () => {
   router.push(`/products/${product.id}`);
-}
-``` 
-voce ainda pode usar `router.back()` para retornar a página anterior. 
+};
+```
+
+voce ainda pode usar `router.back()` para retornar a página anterior.
 
 ## Left Join em tabelas
+
 Uso de left join em tabelas com prisma pode ser usado com `include` adicionado às buscas do prisma client. Assim voce pode fazer por exemplo:
+
 ```typescript
 const barbershop = await db.barbershop.findUnique({
   where: {
@@ -307,12 +349,16 @@ const barbershop = await db.barbershop.findUnique({
   },
   include: {
     Services: true,
-  }
-})
+  },
+});
 ```
+
 faça isso caso precise de dados da tabela para usar um `map()` de coisas relacionadas, principalmente se a modelagem orm do prisma tem atributos como `services[]`, um vetor de serviços do tipo (1,n).
+
 ## autenticação com o Next.Auth
+
 O [next.auth](https://next-auth.js.org/) é um framework do next de adaptação que fornece o adapter do next.js para trabalharmos. Porém algumas configurações são necessárias para o banco receber as autenticação de usuário e sessão de usuário, são elas a serem adicionadas ao schema:
+
 ```prisma
 
 datasource db {
@@ -323,7 +369,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  
+
 }
 
 model Account {
@@ -373,48 +419,64 @@ model VerificationToken {
 }
 
 ```
+
 Não esqueça de fazer sua migration do schema para atualizar seu banco online:
+
 ```bash
 npx prisma migrate dev --name add_user_tables
 ```
+
 E não se esqueça de sempre que mudar o banco usar o comando:
+
 ```bash
 npx prisma generate
 ```
+
 Instale o Next.Auth com o seguinte comando:
+
 ```bash
 npm i next-auth
 ```
+
 O next.auth vai conectar os adapters aos provedores de autenticação do google, github, e vários outros. Precisamos criar uma rota de api para o next context api. Para isso crie um arquivo na pasta app do seguinte modo:
+
 ```bash
 api/auth/[...nextauth]/route.tsx
 ```
+
 com isso qualquer rota que o servidor fizer que seja do tipo `localhost:3000/auth/{qualquer rota}` vai cair nesta rota como get ou post.
+
 ### Autenticação com o google
+
 No arquivo criado de `route.tsx` insira o seguinte código:
+
 ```typescript
-import NextAuth from "next-auth"
-import GoogleProvider from 'next-auth/providers/google'
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: "",
       clientSecret: "",
-    })
-  ]
-})
+    }),
+  ],
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };
 ```
+
 com ele estamos dizendo que o provedor de autenticação é o google e o adaptador é para prisma orm. O proximo passo é instalar o adaptador para prisma e conseguir as chaves da api do google.
+
 ```bash
 npm i @auth/prisma-adapter
 ```
+
 Agora colocamos esse adapter no nosso arquivo de rotas também:
+
 ```typescript
 import NextAuth from "next-auth";
-import GoogleProvider from 'next-auth/providers/google';
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/app/_lib/prisma";
 import { Adapter } from "next-auth/adapters";
@@ -425,29 +487,37 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: "",
       clientSecret: "",
-    })
-  ]
-})
+    }),
+  ],
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };
 ```
+
 Não coloque as chaves api diretamente no `clientId` e `clietSecret`, coloque elas no seu arquivo `.env` onde ficam suas senhas, e importe de lá.
+
 ### Google developer console
+
 Vamos até o [google developer console](https://console.cloud.google.com/), crie um novo projeto e vá até em api's e serviços > credentials do google cloud, lá clique em criar novas credenciais > ID do cliente OAuth, que é o serviço para logar com sua conta no google em outras aplicações de maneira fácil com um botão, muito utilizada em outros lugares.
 Configure a tela de consentimento. O usuario que voce quer utilizar é externo. Salve e continue todas as duas telas, volte ao painel e clique em credentials de novo e criar nova credencial para OAuth client ID, selecione web application. Voce precisará colocar URIs javascript autorizadas e URIs de redirecionamento autorizadas para callback, utilize as seguintes para desenvolvimento e produção:
+
 ```bash
 https://localhost:3000
 https://localhost:3000/api/auth/callback/google
 ```
+
 crie e copie as chaves api que voce criar para o seu `.env`, nas seguintes variaveis:
+
 ```.env
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
-``` 
+```
+
 e adicione as variáveis no seu `route.tsx` assim:
+
 ```typescript
 import NextAuth from "next-auth";
-import GoogleProvider from 'next-auth/providers/google';
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/app/_lib/prisma";
 import { Adapter } from "next-auth/adapters";
@@ -458,17 +528,21 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    })
-  ]
-})
+    }),
+  ],
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };
 ```
+
 Volte para o `console.cloud` e vá em tela de permissão OAuth, e publique seu app, agora inclua o provider na pasta app, do seguinte modo:
+
 ```bash
 app/_providers/auth.tsx
 ```
+
 e adicione um componente que faça a autenticação
+
 ```typescript
 "use client";
 
@@ -476,55 +550,63 @@ import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-    return (
-        <SessionProvider>
-            {children}
-        </SessionProvider>
-    );
-}
- 
+  return <SessionProvider>{children}</SessionProvider>;
+};
+
 export default AuthProvider;
 ```
-Agora voce pode envolver o auth provider ao redor de todo layout da aplicação para poder usar os dados e estado de login do usuário google na sua aplicação
-```typescript
-    <html lang="pt-br">
-      <body className={`${inter.className} dark`}>
-        <AuthProvider>
-          {children}
-          <Footer />
-        </AuthProvider>
-      </body>
-    </html>
-```
-## Usando dados da sessão autenticada
-Agora podemos coletar dados do usuário em sessão na nossa aplicação dentro de client components usando o `useSession()`, assim podemos exibir dados que o google guarda em nossas aplicações quando logados no sistema.
-```typescript
-  "use client";
-  import { useSession } from "next-auth/react";
 
-  const Welcome = () => {
-    const { data } = useSession();
-    return (
-      <h1>Welcome {data?.user?.name}!</h1>
-    )
-  }
-  export default Welcome;
+Agora voce pode envolver o auth provider ao redor de todo layout da aplicação para poder usar os dados e estado de login do usuário google na sua aplicação
+
+```typescript
+<html lang="pt-br">
+  <body className={`${inter.className} dark`}>
+    <AuthProvider>
+      {children}
+      <Footer />
+    </AuthProvider>
+  </body>
+</html>
 ```
+
+## Usando dados da sessão autenticada
+
+Agora podemos coletar dados do usuário em sessão na nossa aplicação dentro de client components usando o `useSession()`, assim podemos exibir dados que o google guarda em nossas aplicações quando logados no sistema.
+
+```typescript
+"use client";
+import { useSession } from "next-auth/react";
+
+const Welcome = () => {
+  const { data } = useSession();
+  return <h1>Welcome {data?.user?.name}!</h1>;
+};
+export default Welcome;
+```
+
 O componente acima deve exibir seu nome se estiver logado, para isso voce precisará ativar uma função assincrona do Next-auth chamada `SignIn()` e para deslogar de uma sessão voce deve usar uma função assincrona `SignOut()`. Assim voce poderá usar a autenticação e todas as suas facilidades de maneira completa.
+
 ### autenticado e não autenticado
+
 Além de `data` do useSession ainda podemos pegar dados de `status` que é um valor que pode ser `authenticated` ou `unauthenticated`
 
 ## Sessão no lado do servidor
+
 Para pegar a sessão do lado do servidor precisamos usar outra função do next.auth, a função assincrona `getSeverSession()`, voce pode saber se um usuário está autenticado usando o seguinte:
+
 ```typescript
 const session = await getServerSession();
 
-{!!session?.user}
+{
+  !!session?.user;
+}
 ```
+
 as duas esclamações retornam um booleano que indica se temos usuário na sessão. Porém para ter acesso a esses dados de sessão precisamos exportá-los das nossas rotas de servidor, logo vamos alterar um pouco o `route.tsx`:
+
 ```typescript
 import NextAuth, { AuthOptions } from "next-auth";
-import GoogleProvider from 'next-auth/providers/google';
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/app/_lib/prisma";
 import { Adapter } from "next-auth/adapters";
@@ -535,36 +617,40 @@ export const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    })
-  ]
-}
+    }),
+  ],
+};
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };
 ```
+
 agora exportamos as opções de autenticação ao mesmo tempo do handler com a função do next auth que recebe essas opções. Agora eu posso passar esse `authOptions` para o meu `getServerSession()`
+
 ```typescript
 const session = await getServerSession(authOptions);
 ```
 
 ## Calendar component
+
 O componente de calendário do Shadcn-ui é feito com a biblioteca do [react-day-picker](https://react-day-picker.js.org/). Deste modo a estilização dele é personalizada e não pode ser feita no tailwind, então temos propriedades e estilos de classe proprios para esse componentes. observe:
+
 ```typescript
-<Calendar 
-  mode="single" 
-  selected={date} 
-  onSelect={setDate} 
-  className="" 
+<Calendar
+  mode="single"
+  selected={date}
+  onSelect={setDate}
+  className=""
   locale={ptBR}
   styles={{
     head_cell: {
       width: "100%",
     },
-      cell: {
+    cell: {
       width: "100%",
     },
-      button: {
+    button: {
       width: "100%",
     },
     nav_button_previous: {
@@ -577,35 +663,38 @@ O componente de calendário do Shadcn-ui é feito com a biblioteca do [react-day
     },
     caption: {
       textTransform: "capitalize",
-    }
+    },
   }}
 />
 ```
+
 Ele utiliza o `useState()` do react, então não se esqueça de fazer uma declaração para que os resultados dos cliques em cada dia sejam renderizados e guardados.
+
 ### useMemo()
 
 O useMemo é uma função do react que executa uma função apenas quando uma variavel dentro de uma lista de referencias é alterado, semelhante ao `useEffect()`, deste modo voce deve usar desse jeito:
+
 ```typescript
 const timeList = useMemo(() => {
-  return date ? generateDayTimeList(date) : []
+  return date ? generateDayTimeList(date) : [];
 }, [date]);
-
 ```
 
 ## Server actions
+
 Para enviar algo para o banco de dados ou mesmo usar qualquer ação de servidor em componentes do lado client no next, voce pode usar as server actions. Para fazer isso nós usaremos um arquivo diferente com a função que salva as ações de servidor com o comando `use server`. As funções de servidor vão ficar nesse arquivo:
-```typescript 
+
+```typescript
 "use server";
 
 import { db } from "@/app/_lib/prisma";
 
 interface saveBookingParams {
-    barbershopId: string;
-    serviceId: string;
-    userId: string;
-    date: Date;
+  barbershopId: string;
+  serviceId: string;
+  userId: string;
+  date: Date;
 }
-
 
 export const saveBooking = async (params: saveBookingParams) => {
   await db.booking.create({
@@ -613,9 +702,10 @@ export const saveBooking = async (params: saveBookingParams) => {
       userId: params.userId,
       serviceId: params.serviceId,
       date: params.date,
-      barbershopId: params.barbershopId
-    }
-  })
-}
+      barbershopId: params.barbershopId,
+    },
+  });
+};
 ```
+
 Com isso voce pode chamar a função de saveBooking em qualquer função assincrona do lado do client. Assim em algum botão voce pode passar os dados de params para o backend salvar em banco.
