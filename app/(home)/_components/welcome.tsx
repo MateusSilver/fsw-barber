@@ -27,8 +27,7 @@ const Welcome = () => {
                     
                 ) : (
                     <div className="flex justify-between pt-5">
-                        <div className="">
-                            <h2 className="text-xl font-bold ">Olá, Faça seu login!</h2>
+                        <div className="flex items-center">
                             <p className="capitalize text-sm">{format(new Date(),"EEEE',' d 'de' MMMM 'de' yyyy", {
                                 locale: ptBR,
                             })}</p>
