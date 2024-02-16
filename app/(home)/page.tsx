@@ -40,7 +40,7 @@ export default async function Home() {
                 </div>
 
                 <div className="mt-6">
-                    {confirmedBookings.length !== 0 ? <h2 className="text-gray-400 uppercase font-bold text-sm mb-3" >Agendamentos</h2> : <></> }
+                    {confirmedBookings?.length !== 0 ? <h2 className="text-gray-400 uppercase font-bold text-sm mb-3" >Agendamentos</h2> : <></> }
                     <div className="flex gap-3 px-2 py-2 overflow-x-auto">
                         {confirmedBookings.map(booking => <BookingItem key={booking.id} booking={booking} />)}
                     </div>
@@ -49,13 +49,12 @@ export default async function Home() {
                 <div className="mt-6 mb-[4.5rem]">
                 <h2 className="text-gray-400 uppercase font-bold text-sm mt-6 mb-3">Recomendadas</h2>
                 <div className="flex gap-4 overflow-x-auto py-2">
-                    {barbershops.map((barbershop) => (
+                    {barbershops?.map((barbershop) => (
                         <BarbershopItem key={barbershop.id} barbershop={barbershop}/>
                     ))}
                 </div>
                 </div>
             </div>
-            
         </div>
     );
 }
