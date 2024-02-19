@@ -7,7 +7,13 @@ import Welcome from "./_components/welcome";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../_lib/auth";
 
-export default async function Home() {
+interface SearchProps {
+  searchParams: {
+    search: string;
+  };
+}
+
+export default async function Home({ searchParams }: SearchProps) {
   const session = await getServerSession(authOptions);
   const [barbershops, confirmedBookings] = await Promise.all([
     db.barbershop.findMany({}),
@@ -37,7 +43,7 @@ export default async function Home() {
         <Welcome />
 
         <div className=" mt-6">
-          <Search />
+          <Search defaultValues={searchParams} />
         </div>
 
         <div className="mt-6">
