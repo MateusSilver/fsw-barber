@@ -1,5 +1,13 @@
 "use client";
+"use client";
 import { Button } from "@/app/_components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/app/_components/ui/form";
 import {
   Form,
   FormControl,
@@ -41,6 +49,28 @@ const Search = ({ defaultValues }: SearchProps) => {
 
   return (
     <div className="flex items-center gap-2">
+      <Form {...form}>
+        <form
+          className="flex w-full gap-2"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
+          <FormField
+            control={form.control}
+            name="search"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <Input placeholder="Busque por uma barbearia..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button variant="default" size="icon" type="submit">
+            <SearchIcon size={18} />
+          </Button>
+        </form>
+      </Form>
       <Form {...form}>
         <form
           className="flex w-full gap-2"
