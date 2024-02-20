@@ -236,7 +236,7 @@ const barbershops = await db.barbershop.findMany({});
 
 e posteriormente usar no mesmo server-component da seguinte forma:
 
-```javascript
+```tsx
 {
   barbershops.map((barbershop) => (
     <BarbershopItem key={barbershop.id} barbershop={barbershop} />
@@ -297,25 +297,25 @@ const product = await db.product.findUnique({
 
 Lembrando de usar o async já que voce deve acessar o banco de dados com uma função assíncrona. logo a pagina do produto fica assim:
 
-```Typescript
+```tsx
 import { db } from "@/app/_lib/prisma";
 
 interface BarbershopDetailsPageProps {
-    params: {
-        id?: string;
-    }
+  params: {
+    id?: string;
+  };
 }
 
-const BarbershopDetailsPage = async ({params} : BarbershopDetailsPageProps) => {
-    const barbershop = await db.barbershop.findUnique({
-        where: {
-            id: params.id,
-        },
-    })
-    return (
-        <h1>{params.id}</h1>
-    );
-}
+const BarbershopDetailsPage = async ({
+  params,
+}: BarbershopDetailsPageProps) => {
+  const barbershop = await db.barbershop.findUnique({
+    where: {
+      id: params.id,
+    },
+  });
+  return <h1>{params.id}</h1>;
+};
 
 export default BarbershopDetailsPage;
 ```
@@ -558,7 +558,7 @@ export default AuthProvider;
 
 Agora voce pode envolver o auth provider ao redor de todo layout da aplicação para poder usar os dados e estado de login do usuário google na sua aplicação
 
-```typescript
+```tsx
 <html lang="pt-br">
   <body className={`${inter.className} dark`}>
     <AuthProvider>
@@ -636,7 +636,7 @@ const session = await getServerSession(authOptions);
 
 O componente de calendário do Shadcn-ui é feito com a biblioteca do [react-day-picker](https://react-day-picker.js.org/). Deste modo a estilização dele é personalizada e não pode ser feita no tailwind, então temos propriedades e estilos de classe proprios para esse componentes. observe:
 
-```typescript
+```tsx
 <Calendar
   mode="single"
   selected={date}
@@ -709,3 +709,72 @@ export const saveBooking = async (params: saveBookingParams) => {
 ```
 
 Com isso voce pode chamar a função de saveBooking em qualquer função assincrona do lado do client. Assim em algum botão voce pode passar os dados de params para o backend salvar em banco.
+
+## Formulários
+
+Para criar formulários podemos usar um componente do shadcn-ui chamado `Form` que usa zod por baixos dos panos para criar formularios. configure primeiro os dados do seu formulário.
+
+```typescript
+import { z } from "zod";
+
+const formSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "campo obrigatorio")
+    .max(50, "nome muito grande"),
+  active: z.boolean().default("false").optional(),
+  sobrenome: z.string().min(1, { message: "campo obrigatorio" }).max(50),
+});
+```
+
+voce ainda pode usar vários modificadores como `optional()` e etc. para criar o melhor dado dentro do seu formulário, depois use o react hook chamado `useForm()` com um generico para formSchema do seguinte modo:
+
+```typescript
+interface SearchProps {
+  defaultValues: z.infer<typeof formSchema>;
+}
+
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  defaultValues,
+});
+```
+
+Assim voce poderá usar useForm com o zodResolver, mandando valores default que são os valores padrão para envio dos formulários.
+Já no frontend o formulário que voce deve utilizar com os componentes do shadcn-ui baixados é mais ou menos o seguinte:
+
+```tsx
+<div className="flex items-center gap-2">
+  <Form {...form}>
+    <form
+      className="flex w-full gap-2"
+      onSubmit={form.handleSubmit(handleSubmit)}
+    >
+      <FormField
+        control={form.control}
+        name="search"
+        render={({ field }) => (
+          <FormItem className="w-full">
+            <FormControl>
+              <Input placeholder="Busque por uma barbearia..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <Button variant="default" size="icon" type="submit">
+        <SearchIcon size={18} />
+      </Button>
+    </form>
+  </Form>
+</div>
+```
+
+Existem muitos jeitos de fazer isso, mas `onSubmit()` voce fará o tratamento dos dados pegos para enviar para algum outro lugar. mais informações em (https://ui.shadcn.com/docs/components/form)[shadcn-ui]. o recebimento também é atraves de um generic:
+
+```tsx
+const handleSubmit = (data: z.infer<typeof formSchema>) => {
+  router.push(`/barbershops?search=${data.search}`);
+};
+```
