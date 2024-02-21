@@ -1,6 +1,42 @@
 # Guia do desenvolvimento - Lições aprendidas
 
+## inicio
+
+Para iniciar o projeto voce pode usar
+
+```bash
+npx create-next-app@latest .
+```
+
+crie em uma pasta para o projeto e adicione a ela os seguintes artificios:
+
+- typescript yes
+- eslint yes
+- tailwind yes
+- sem src/ diretory
+- com app router
+
+rode o projeto primeiro de tudo com o comando:
+
+```bash
+npm run dev
+```
+
 ## Banco de dados
+
+Baixar o prisma usando o comando
+
+```bash
+npm install prisma --save-dev
+```
+
+```bash
+npx prisma init --datasource-provider postgresql
+```
+
+o ultimo comando deve criar uma pasta `/prisma` na raiz do seu diretorio contendo o schema do banco de dados e o arquivo `.env` que deverá conter suas senhas e a `DATABASE_URL`, não as perca e nem dê commit nelas.
+
+## Tipos de dados do schema
 
 Uso de `Decimal` para float em banco de dados, se for usar preço nisso é bom usar o formato do banco de dados no seguinte modelo para base decimal e duas casas depois da virgula:
 
@@ -24,7 +60,7 @@ depois de adicionar o seed para popular o banco de dados, adicione no package.js
 
 ```json
 "prisma": {
-    "seed":"ts-node prisma/see.ts"
+    "seed":"ts-node prisma/seed.ts"
 },
 ```
 
@@ -777,4 +813,8 @@ Existem muitos jeitos de fazer isso, mas `onSubmit()` voce fará o tratamento do
 const handleSubmit = (data: z.infer<typeof formSchema>) => {
   router.push(`/barbershops?search=${data.search}`);
 };
+```
+
+```
+
 ```
